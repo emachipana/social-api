@@ -20,15 +20,21 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  avatar: String,
+  avatar: {
+    public_id: {
+      type: String,
+      required: true
+    },
+    url: {
+      type: String,
+      required: true
+    }
+  },
   posts: [{
     type: Schema.Types.ObjectId,
     ref: "Post"
   }],
-  timestamps: {
-    createdAt: "created_at",
-    updatedAt: "updated_at"
-  }
+  timestamps: Date
 });
 
 // config when user object is convert to JSON format
