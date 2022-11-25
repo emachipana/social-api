@@ -3,11 +3,15 @@ import { config } from "dotenv";
 import connectDB from "./db/mongo.js";
 import usersRouter from "./controllers/users.js";
 import handleErrors from "./middlewares/handleErrors.js";
+import { configCloudinary } from "./services/cloudinary.js";
 
 const app = express();
 
 // init environment variables from .env file
 config();
+
+// start config for upload images to cloudinary
+configCloudinary();
 
 // connect to database
 connectDB();
