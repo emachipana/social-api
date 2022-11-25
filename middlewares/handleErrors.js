@@ -12,6 +12,10 @@ const ERRORS_STORE = {
   ValidationError: (res, err) => {
     res.status(422).json({ message: err.message });
   },
+  // handle malformed token
+  JsonWebTokenError: (res) => {
+    res.status(422).json({ message: "invalid token" });
+  },
   // in case no error match
   defaultError: (res, err) => {
     res.status(500).json({ message: "Unknow error, please try again", detail: err });
