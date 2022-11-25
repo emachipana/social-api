@@ -15,9 +15,9 @@ const postSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Like"
   }],
-  timestamps: {
-    createdAt: "created_at",
-    updatedAt: "updated_at"
+  date: {
+    type: Date,
+    required: true
   }
 });
 
@@ -26,7 +26,7 @@ postSchema.set("toJSON", {
   transform: (_doc, returnedObject) => {
     returnedObject.id = returnedObject._id;
     delete returnedObject._id;
-    delete returnedObject._v;
+    delete returnedObject.__v;
   }
 });
 

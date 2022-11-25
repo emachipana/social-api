@@ -34,7 +34,10 @@ const userSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Post"
   }],
-  timestamps: Date
+  date: {
+    type: String,
+    required: true
+  }
 });
 
 // config when user object is convert to JSON format
@@ -42,7 +45,7 @@ userSchema.set("toJSON", {
   transform: (_doc, returnedObject) => {
     returnedObject.id = returnedObject._id;
     delete returnedObject._id;
-    delete returnedObject._v;
+    delete returnedObject.__v;
     delete returnedObject.passwordHash;
   }
 });

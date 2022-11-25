@@ -9,6 +9,10 @@ const commentSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User"
+  },
+  date: {
+    type: String,
+    required: true
   }
 });
 
@@ -17,7 +21,7 @@ commentSchema.set("toJSON", {
   transform: (_doc, returnedObject) => {
     returnedObject.id = returnedObject._id;
     delete returnedObject._id;
-    delete returnedObject._v;
+    delete returnedObject.__v;
   }
 });
 
