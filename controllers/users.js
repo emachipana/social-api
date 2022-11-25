@@ -19,11 +19,11 @@ usersRouter.get("/:id", async (req, res, next) => {
       content: 1,
       photo: 1,
       likes: 1,
-      timestamps: 1
+      date: 1
     });
   
     if(!user) return res.status(404).json({ message: "User not found" });
-  
+
     res.json(user);
   }catch(err) {
     next(err);
@@ -43,18 +43,24 @@ usersRouter.post("/", upload.single("avatar"), async (req, res, next) => {
       : undefined;
 
     // upload image to cloudinary
-    uploadedImage = await cloudinary.uploader.upload(req.file.path);
+    if(req.file) {
+      uploadedImage = await cloudinary.uploader.upload(req.file.path);
+    }
+
+    const avatar = uploadedImage 
+      ? {
+          public_id: uploadedImage.public_id,
+          url: uploadedImage.secure_url
+        }
+      : undefined;
 
     // create user
     const newUser = new User({
       username,
       name,
       last_name,
-      passwordHash: passwordHash,
-      avatar: {
-        public_id: uploadedImage.public_id,
-        url: uploadedImage.secure_url
-      },
+      passwordHash,
+      avatar,
       date: new Date()
     });
 
@@ -76,7 +82,9 @@ usersRouter.post("/", upload.single("avatar"), async (req, res, next) => {
     res.status(201).json({ id, ...user, token });
   }catch(err) {
     // remove image from cloudinary when app is crashed
-    await cloudinary.uploader.destroy(uploadedImage.public_id);
+    if(uploadedImage) {
+      await cloudinary.uploader.destroy(uploadedImage.public_id);
+    }
     next(err);
   }
 });
@@ -93,7 +101,9 @@ usersRouter.delete("/", userExtractor, async (req, res, next) => {
     if(!user) return res.status(404).json({ message: "User not found, try again" });
 
     // remove image from cloudinary
-    await cloudinary.uploader.destroy(user.avatar.public_id);
+    if(user.avatar.public_id) {
+      await cloudinary.uploader.destroy(user.avatar.public_id);
+    }
 
     // response to client
     res.json({ message: "User was deleted" });
