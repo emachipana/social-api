@@ -5,7 +5,7 @@ function userExtractor(req, res, next) {
   const authorization = req.get("authorization");
 
   // get token and handle authorization undefined
-  const token = authorization?.spli(" ")[1];
+  const token = authorization?.split(" ")[1];
 
   // decode token with  json web token
   const decodedToken = token 
