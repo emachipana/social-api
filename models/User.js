@@ -21,14 +21,8 @@ const userSchema = new Schema({
     required: true
   },
   avatar: {
-    public_id: {
-      type: String,
-      required: true
-    },
-    url: {
-      type: String,
-      required: true
-    }
+    public_id: String,
+    url: String
   },
   posts: [{
     type: Schema.Types.ObjectId,
@@ -42,11 +36,14 @@ const userSchema = new Schema({
 
 // config when user object is convert to JSON format
 userSchema.set("toJSON", {
-  transform: (_doc, returnedObject) => {
+  transform: (doc, returnedObject) => {
     returnedObject.id = returnedObject._id;
     delete returnedObject._id;
     delete returnedObject.__v;
     delete returnedObject.passwordHash;
+    if(!doc.avatar.public_id) {
+      returnedObject.avatar = {};
+    }
   }
 });
 
