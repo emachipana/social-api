@@ -4,6 +4,7 @@ import connectDB from "./db/mongo.js";
 import usersRouter from "./controllers/users.js";
 import handleErrors from "./middlewares/handleErrors.js";
 import { configCloudinary } from "./services/cloudinary.js";
+import sessionsRouter from "./controllers/sessions.js";
 
 const app = express();
 
@@ -22,8 +23,10 @@ app.use(express.json());
 // users endpoints
 app.use("/api/users", usersRouter);
 
-// middlewares
+// sessions endpoints
+app.use("/api/session", sessionsRouter);
 
+// middlewares
 // handle errors
 app.use(handleErrors);
 
