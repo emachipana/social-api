@@ -112,4 +112,69 @@ usersRouter.delete("/", userExtractor, async (req, res, next) => {
   }
 });
 
+// PATCH update user
+usersRouter.patch("/", [ userExtractor, upload.single("avatar") ], async (req, res, next) => {
+  const { username, name, last_name, password } = req.body;
+  let uploadedImage = "";
+
+  try {
+    // get user for update avatar
+    const user = await User.findById(req.userId);
+
+    // config password hash
+    const saltRounds = 10;
+    const passwordHash = password
+      ? await bcrypt.hash(password, saltRounds)
+      : undefined;
+
+    // upload image to cloudinary
+    if(req.file) {
+      // remove image from cloudinary if this exist
+      if(user.avatar.public_id) await cloudinary.uploader.destroy(user.avatar.public_id);
+      // upload new image
+      uploadedImage = await cloudinary.uploader.upload(req.file.path);
+    }
+
+    const avatar = uploadedImage 
+      ? {
+          public_id: uploadedImage.public_id,
+          url: uploadedImage.secure_url
+        }
+      : undefined;
+
+    // recollect info user
+    const userInfo = {
+      username,
+      name,
+      last_name,
+      passwordHash,
+      avatar
+    };
+
+    // update user
+    const updatedUser = await User.findByIdAndUpdate(
+      req.userId,
+      userInfo,
+      { new: true }  
+    ).populate("posts", {
+      content: 1,
+      photo: 1,
+      likes: 1,
+      date: 1
+    });
+  
+    // handle userId does not match any doc
+    if(!updatedUser) return res.status(404).json({ message: "User not found, try again" });
+
+    // response to client
+    res.json(updatedUser);
+  }catch(err) {
+    // remove image from cloudinary when app is crashed
+    if(uploadedImage) {
+      await cloudinary.uploader.destroy(uploadedImage.public_id);
+    }
+    next(err);
+  }
+});
+
 export default usersRouter;
