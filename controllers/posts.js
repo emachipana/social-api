@@ -2,10 +2,11 @@ import { Router } from "express";
 import authorizeUser from "../middlewares/authorizeUser.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
-import { cloudinary } from "../services/cloudinary.js";
+import { cloudinary } from "../utils/cloudinary.js";
 import upload from "../middlewares/multer.js";
 import Like from "../models/Like.js";
 import validateOwnerUser from "../middlewares/validateOwnerUser.js";
+import uploadImage from "../utils/uploadImage.js";
 
 const postsRouter = Router();
 
@@ -61,17 +62,9 @@ postsRouter.post("/", [ authorizeUser, upload.single("photo") ], async (req, res
     const user = await User.findById(userId);
     if(!user) return res.status(404).json({ message: "User not found" });
   
-    // upload image to cloudinary
-    if(req.file) {
-      uploadedImage = await cloudinary.uploader.upload(req.file.path);
-    }
+    const { image: photo, imageObject } = await uploadImage(req);
 
-    const photo = uploadedImage
-      ? {
-        public_id: uploadedImage.public_id,
-        url: uploadedImage.secure_url
-      }
-      : undefined;
+    uploadedImage = imageObject;
 
     // create new post
     const newPost = new Post({
