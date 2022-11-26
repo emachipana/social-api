@@ -63,7 +63,6 @@ postsRouter.post("/", [ authorizeUser, upload.single("photo") ], async (req, res
     if(!user) return res.status(404).json({ message: "User not found" });
   
     const { image: photo, imageObject } = await uploadImage(req);
-
     uploadedImage = imageObject;
 
     // create new post
@@ -113,6 +112,44 @@ postsRouter.delete("/:id", [ authorizeUser, validateOwnerUser ], async (req, res
     // response to client
     res.json({ message: "Post was deleted" });
   }catch(err) {
+    next(err);
+  }
+});
+
+// PATCH update user
+postsRouter.patch("/:id", [ authorizeUser, validateOwnerUser, upload.single("photo") ], async (req, res, next) => {
+  const { content } = req.body;
+  const { post } = req;
+  let uploadedImage = "";
+
+  try {
+    // upload image to cloudinary
+    const { image: photo, imageObject } = await uploadImage(req, true, post, "photo");
+    uploadedImage = imageObject;
+
+    const postInfo = { content, photo };
+
+    // update post
+    const updatedPost = await Post.findByIdAndUpdate(
+      req.params.id,
+      postInfo,
+      { new: true }
+    ).populate("user", {
+      avatar: 1,
+      name: 1,
+      date: 1
+    })
+    .populate("likes", {
+      user: 1
+    });
+
+    // response to client
+    res.json(updatedPost);
+  }catch(err) {
+    // remove image from cloudinary when app is crashed
+    if(uploadedImage) {
+      await cloudinary.uploader.destroy(uploadedImage.public_id);
+    }
     next(err);
   }
 });
