@@ -40,7 +40,7 @@ sessionsRouter.post("/login", async (req, res, next) => {
      );
   
      // response to client
-     res.json({ ...restOfUser, token });
+     res.json({ id, ...restOfUser, token });
   }catch(err) {
     next(err);
   }
