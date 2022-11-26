@@ -4,7 +4,6 @@ import { cloudinary } from "../services/cloudinary.js";
 import upload from "../middlewares/multer.js";
 import bcrypt from "bcrypt";
 import authorizeUser from "../middlewares/authorizeUser.js";
-import Post from "../models/Post.js";
 
 const usersRouter = Router();
 
