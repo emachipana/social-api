@@ -3,8 +3,9 @@ import { config } from "dotenv";
 import connectDB from "./db/mongo.js";
 import usersRouter from "./controllers/users.js";
 import handleErrors from "./middlewares/handleErrors.js";
-import { configCloudinary } from "./services/cloudinary.js";
+import { configCloudinary } from "./utils/cloudinary.js";
 import sessionsRouter from "./controllers/sessions.js";
+import postsRouter from "./controllers/posts.js";
 
 const app = express();
 
@@ -25,6 +26,9 @@ app.use("/api/users", usersRouter);
 
 // sessions endpoints
 app.use("/api/session", sessionsRouter);
+
+// posts endpoints
+app.use("/api/posts", postsRouter);
 
 // middlewares
 // handle errors

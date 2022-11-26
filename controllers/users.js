@@ -1,10 +1,10 @@
 import { Router } from "express";
 import User from "../models/User.js";
-import { cloudinary } from "../services/cloudinary.js";
+import { cloudinary } from "../utils/cloudinary.js";
 import upload from "../middlewares/multer.js";
 import bcrypt from "bcrypt";
-import userExtractor from "../middlewares/userExtractor.js";
-import Post from "../models/Post.js";
+import authorizeUser from "../middlewares/authorizeUser.js";
+import uploadImage from "../utils/uploadImage.js";
 
 const usersRouter = Router();
 
@@ -12,8 +12,6 @@ const usersRouter = Router();
 usersRouter.get("/:id", async (req, res, next) => {
   try {
     // get user from database and populate with her posts
-    const posts = await Post.find({ });
-    console.log(posts);
     const user = await User.findById(req.params.id).populate("posts", {
       content: 1,
       photo: 1,
@@ -30,7 +28,7 @@ usersRouter.get("/:id", async (req, res, next) => {
 });
 
 // DELETE user
-usersRouter.delete("/", userExtractor, async (req, res, next) => {
+usersRouter.delete("/", authorizeUser, async (req, res, next) => {
   const { userId } = req;
   
   try {
@@ -53,7 +51,7 @@ usersRouter.delete("/", userExtractor, async (req, res, next) => {
 });
 
 // PATCH update user
-usersRouter.patch("/", [ userExtractor, upload.single("avatar") ], async (req, res, next) => {
+usersRouter.patch("/", [ authorizeUser, upload.single("avatar") ], async (req, res, next) => {
   const { username, name, last_name, password } = req.body;
   let uploadedImage = "";
 
@@ -68,19 +66,8 @@ usersRouter.patch("/", [ userExtractor, upload.single("avatar") ], async (req, r
       : undefined;
 
     // upload image to cloudinary
-    if(req.file) {
-      // remove image from cloudinary if this exist
-      if(user.avatar.public_id) await cloudinary.uploader.destroy(user.avatar.public_id);
-      // upload new image
-      uploadedImage = await cloudinary.uploader.upload(req.file.path);
-    }
-
-    const avatar = uploadedImage 
-      ? {
-          public_id: uploadedImage.public_id,
-          url: uploadedImage.secure_url
-        }
-      : undefined;
+    const { image: avatar, imageObject } = await uploadImage(req, true, user, "avatar");
+    uploadedImage = imageObject;
 
     // recollect info user
     const userInfo = {

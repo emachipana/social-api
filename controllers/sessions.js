@@ -3,7 +3,8 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import upload from "../middlewares/multer.js";
-import { cloudinary } from "../services/cloudinary.js";
+import { cloudinary } from "../utils/cloudinary.js";
+import uploadImage from "../utils/uploadImage.js";
 
 const sessionsRouter = Router();
 
@@ -40,7 +41,7 @@ sessionsRouter.post("/login", async (req, res, next) => {
      );
   
      // response to client
-     res.json({ ...restOfUser, token });
+     res.json({ id, ...restOfUser, token });
   }catch(err) {
     next(err);
   }
@@ -58,17 +59,9 @@ sessionsRouter.post("/signup", upload.single("avatar"), async (req, res, next) =
       ? await bcrypt.hash(password, saltRounds)
       : undefined;
 
-    // upload image to cloudinary
-    if(req.file) {
-      uploadedImage = await cloudinary.uploader.upload(req.file.path);
-    }
-
-    const avatar = uploadedImage 
-      ? {
-          public_id: uploadedImage.public_id,
-          url: uploadedImage.secure_url
-        }
-      : undefined;
+    // upload image
+    const { image: avatar, imageObject } = await uploadImage(req);
+    uploadedImage = imageObject;
 
     // create user
     const newUser = new User({
