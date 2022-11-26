@@ -11,7 +11,7 @@ const commentSchema = new Schema({
     ref: "User"
   },
   date: {
-    type: String,
+    type: Date,
     required: true
   }
 });
