@@ -5,6 +5,7 @@ import User from "../models/User.js";
 import { cloudinary } from "../services/cloudinary.js";
 import upload from "../middlewares/multer.js";
 import Like from "../models/Like.js";
+import validateOwnerUser from "../middlewares/validateOwnerUser.js";
 
 const postsRouter = Router();
 
@@ -100,24 +101,11 @@ postsRouter.post("/", [ authorizeUser, upload.single("photo") ], async (req, res
 });
 
 // DELETE post
-postsRouter.delete("/:id", authorizeUser, async (req, res, next) => {
-  const { userId } = req;
+postsRouter.delete("/:id", [ authorizeUser, validateOwnerUser ], async (req, res, next) => {
   const { id: postId }  = req.params;
+  const { post } = req;
 
   try {
-    // get post from database
-    const responsePost = await Post.findById(postId);
-
-    const post = responsePost.toJSON();
-
-    // handle postId does not match any doc
-    if(!post) return res.status(404).json({ message: "Post not found" });
-
-    // validate user is owner of post
-    if(!post.user.equals(userId)) return res.status(401).json({
-      message: "This post belongs to another user"
-    });
-
     // delete post of database
     await Post.deleteOne({ _id: postId });
 
