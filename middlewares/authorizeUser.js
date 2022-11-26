@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
 
-function userExtractor(req, res, next) {
+function authorizeUser(req, res, next) {
   // get header authorization
   const authorization = req.get("authorization");
 
@@ -26,4 +26,4 @@ function userExtractor(req, res, next) {
   next();
 }
 
-export default userExtractor;
+export default authorizeUser;

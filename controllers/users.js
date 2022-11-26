@@ -3,7 +3,7 @@ import User from "../models/User.js";
 import { cloudinary } from "../services/cloudinary.js";
 import upload from "../middlewares/multer.js";
 import bcrypt from "bcrypt";
-import userExtractor from "../middlewares/userExtractor.js";
+import authorizeUser from "../middlewares/authorizeUser.js";
 import Post from "../models/Post.js";
 
 const usersRouter = Router();
@@ -30,7 +30,7 @@ usersRouter.get("/:id", async (req, res, next) => {
 });
 
 // DELETE user
-usersRouter.delete("/", userExtractor, async (req, res, next) => {
+usersRouter.delete("/", authorizeUser, async (req, res, next) => {
   const { userId } = req;
   
   try {
@@ -53,7 +53,7 @@ usersRouter.delete("/", userExtractor, async (req, res, next) => {
 });
 
 // PATCH update user
-usersRouter.patch("/", [ userExtractor, upload.single("avatar") ], async (req, res, next) => {
+usersRouter.patch("/", [ authorizeUser, upload.single("avatar") ], async (req, res, next) => {
   const { username, name, last_name, password } = req.body;
   let uploadedImage = "";
 
