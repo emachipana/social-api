@@ -12,8 +12,6 @@ const usersRouter = Router();
 usersRouter.get("/:id", async (req, res, next) => {
   try {
     // get user from database and populate with her posts
-    const posts = await Post.find({ });
-    console.log(posts);
     const user = await User.findById(req.params.id).populate("posts", {
       content: 1,
       photo: 1,
