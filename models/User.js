@@ -29,7 +29,7 @@ const userSchema = new Schema({
     ref: "Post"
   }],
   date: {
-    type: String,
+    type: Date,
     required: true
   }
 });
