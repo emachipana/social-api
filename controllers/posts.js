@@ -99,4 +99,38 @@ postsRouter.post("/", [ authorizeUser, upload.single("photo") ], async (req, res
 
 });
 
+// DELETE post
+postsRouter.delete("/:id", authorizeUser, async (req, res, next) => {
+  const { userId } = req;
+  const { id: postId }  = req.params;
+
+  try {
+    // get post from database
+    const responsePost = await Post.findById(postId);
+
+    const post = responsePost.toJSON();
+
+    // handle postId does not match any doc
+    if(!post) return res.status(404).json({ message: "Post not found" });
+
+    // validate user is owner of post
+    if(!post.user.equals(userId)) return res.status(401).json({
+      message: "This post belongs to another user"
+    });
+
+    // delete post of database
+    await Post.deleteOne({ _id: postId });
+
+    // remove photo from cloudinary
+    if(post.photo.public_id) {
+      await cloudinary.uploader.destroy(post.photo.public_id);
+    }
+
+    // response to client
+    res.json({ message: "Post was deleted" });
+  }catch(err) {
+    next(err);
+  }
+});
+
 export default postsRouter;
