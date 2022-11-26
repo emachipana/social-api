@@ -95,9 +95,12 @@ postsRouter.post("/", [ authorizeUser, upload.single("photo") ], async (req, res
     // response to client
     res.status(201).json({ ...post, user: restOfUser });
   }catch(err) {
+    // remove image from cloudinary when app is crashed
+    if(uploadedImage) {
+      await cloudinary.uploader.destroy(uploadedImage.public_id);
+    }
     next(err);
   }
-
 });
 
 // DELETE post
