@@ -3,7 +3,7 @@ import User from "../models/User.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import upload from "../middlewares/multer.js";
-import { cloudinary } from "../services/cloudinary.js";
+import { cloudinary } from "../utils/cloudinary.js";
 
 const sessionsRouter = Router();
 

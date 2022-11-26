@@ -1,6 +1,6 @@
 import { Router } from "express";
 import User from "../models/User.js";
-import { cloudinary } from "../services/cloudinary.js";
+import { cloudinary } from "../utils/cloudinary.js";
 import upload from "../middlewares/multer.js";
 import bcrypt from "bcrypt";
 import authorizeUser from "../middlewares/authorizeUser.js";
