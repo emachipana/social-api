@@ -4,6 +4,7 @@ import { cloudinary } from "../utils/cloudinary.js";
 import upload from "../middlewares/multer.js";
 import bcrypt from "bcrypt";
 import authorizeUser from "../middlewares/authorizeUser.js";
+import uploadImage from "../utils/uploadImage.js";
 
 const usersRouter = Router();
 
@@ -65,19 +66,8 @@ usersRouter.patch("/", [ authorizeUser, upload.single("avatar") ], async (req, r
       : undefined;
 
     // upload image to cloudinary
-    if(req.file) {
-      // remove image from cloudinary if this exist
-      if(user.avatar.public_id) await cloudinary.uploader.destroy(user.avatar.public_id);
-      // upload new image
-      uploadedImage = await cloudinary.uploader.upload(req.file.path);
-    }
-
-    const avatar = uploadedImage 
-      ? {
-          public_id: uploadedImage.public_id,
-          url: uploadedImage.secure_url
-        }
-      : undefined;
+    const { image: avatar, imageObject } = await uploadImage(req, true, user, "avatar");
+    uploadedImage = imageObject;
 
     // recollect info user
     const userInfo = {
