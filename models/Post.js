@@ -6,7 +6,10 @@ const postSchema = new Schema({
     type: String,
     required: true
   },
-  photo: String, 
+  photo: {
+    public_id: String,
+    url: String
+  },
   user: {
     type: Schema.Types.ObjectId,
     ref: "User"
@@ -23,10 +26,13 @@ const postSchema = new Schema({
 
 // config when user object is convert to JSON format
 postSchema.set("toJSON", {
-  transform: (_doc, returnedObject) => {
+  transform: (doc, returnedObject) => {
     returnedObject.id = returnedObject._id;
     delete returnedObject._id;
     delete returnedObject.__v;
+    if(!doc.photo.public_id) {
+      returnedObject.photo = {};
+    }
   }
 });
 
