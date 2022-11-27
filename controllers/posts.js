@@ -24,9 +24,6 @@ postsRouter.get("/", async (_req, res) => {
       content: 1,
       user: 1,
       date: 1
-    })
-    .populate("likes", {
-      user: 1
     });
   
   // response to client
@@ -47,9 +44,6 @@ postsRouter.get("/:id", async (req, res, next) => {
         content: 1,
         user: 1,
         date: 1
-      })
-      .populate("likes", {
-        user: 1
       });
 
     // return response not found if post is not found
@@ -153,9 +147,6 @@ postsRouter.patch("/:id", [ authorizeUser, validateOwnerUser, upload.single("pho
       content: 1,
       user: 1,
       date: 1
-    })
-    .populate("likes", {
-      user: 1
     });
 
     // response to client
