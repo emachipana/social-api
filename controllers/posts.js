@@ -20,6 +20,11 @@ postsRouter.get("/", async (_req, res) => {
       name: 1,
       date: 1
     })
+    .populate("comments", {
+      content: 1,
+      user: 1,
+      date: 1
+    })
     .populate("likes", {
       user: 1
     });
@@ -36,6 +41,11 @@ postsRouter.get("/:id", async (req, res, next) => {
       .populate("user", {
         avatar: 1,
         name: 1,
+        date: 1
+      })
+      .populate("comments", {
+        content: 1,
+        user: 1,
         date: 1
       })
       .populate("likes", {
@@ -137,6 +147,11 @@ postsRouter.patch("/:id", [ authorizeUser, validateOwnerUser, upload.single("pho
     ).populate("user", {
       avatar: 1,
       name: 1,
+      date: 1
+    })
+    .populate("comments", {
+      content: 1,
+      user: 1,
       date: 1
     })
     .populate("likes", {
