@@ -7,6 +7,7 @@ import { configCloudinary } from "./utils/cloudinary.js";
 import sessionsRouter from "./controllers/sessions.js";
 import postsRouter from "./controllers/posts.js";
 import commentsRouter from "./controllers/comments.js";
+import likesRouter from "./controllers/likes.js";
 
 const app = express();
 
@@ -33,6 +34,9 @@ app.use("/api/posts", postsRouter);
 
 // comments endpoints
 app.use("/api/comments", commentsRouter);
+
+// likes endpoints
+app.use("/api/likes", likesRouter);
 
 // middlewares
 // handle errors

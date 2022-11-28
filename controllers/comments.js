@@ -14,7 +14,7 @@ commentsRouter.post("/", authorizeUser ,async (req, res, next) => {
 
   try {
     // get user from database
-    let user = await User.findById(userId);
+    const user = await User.findById(userId);
     if(!user) return res.status(404).json({ message: "User not found" });
   
     // get post from database
