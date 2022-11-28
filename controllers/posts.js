@@ -20,8 +20,10 @@ postsRouter.get("/", async (_req, res) => {
       name: 1,
       date: 1
     })
-    .populate("likes", {
-      user: 1
+    .populate("comments", {
+      content: 1,
+      user: 1,
+      date: 1
     });
   
   // response to client
@@ -38,8 +40,10 @@ postsRouter.get("/:id", async (req, res, next) => {
         name: 1,
         date: 1
       })
-      .populate("likes", {
-        user: 1
+      .populate("comments", {
+        content: 1,
+        user: 1,
+        date: 1
       });
 
     // return response not found if post is not found
@@ -97,12 +101,11 @@ postsRouter.post("/", [ authorizeUser, upload.single("photo") ], async (req, res
 
 // DELETE post
 postsRouter.delete("/:id", [ authorizeUser, validateOwnerUser ], async (req, res, next) => {
-  const { id: postId }  = req.params;
   const { post } = req;
 
   try {
     // delete post of database
-    await Post.deleteOne({ _id: postId });
+    await Post.deleteOne({ _id: req.params.id });
 
     // remove photo from cloudinary
     if(post.photo.public_id) {
@@ -139,8 +142,10 @@ postsRouter.patch("/:id", [ authorizeUser, validateOwnerUser, upload.single("pho
       name: 1,
       date: 1
     })
-    .populate("likes", {
-      user: 1
+    .populate("comments", {
+      content: 1,
+      user: 1,
+      date: 1
     });
 
     // response to client
