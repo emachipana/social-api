@@ -64,4 +64,17 @@ commentsRouter.patch("/:id", [ authorizeUser, validateOwnerUser ], async (req, r
   }
 });
 
+// DELETE comment
+commentsRouter.delete("/:id", [ authorizeUser, validateOwnerUser ], async (req, res, next) => {  
+  try {
+    // delete comment of database
+    await Comment.deleteOne({ _id: req.params.id });
+
+    // response to client
+    res.json({ message: "Comment was deleted" });
+  }catch(err) {
+    next(err);
+  }
+});
+
 export default commentsRouter;

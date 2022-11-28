@@ -101,12 +101,11 @@ postsRouter.post("/", [ authorizeUser, upload.single("photo") ], async (req, res
 
 // DELETE post
 postsRouter.delete("/:id", [ authorizeUser, validateOwnerUser ], async (req, res, next) => {
-  const { id: postId }  = req.params;
   const { post } = req;
 
   try {
     // delete post of database
-    await Post.deleteOne({ _id: postId });
+    await Post.deleteOne({ _id: req.params.id });
 
     // remove photo from cloudinary
     if(post.photo.public_id) {
