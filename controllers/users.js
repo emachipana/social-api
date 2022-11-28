@@ -58,6 +58,7 @@ usersRouter.patch("/", [ authorizeUser, upload.single("avatar") ], async (req, r
   try {
     // get user for update avatar
     const user = await User.findById(req.userId);
+    if(!user) return res.status(404).json({ message: "User not found" });
 
     // config password hash
     const saltRounds = 10;
