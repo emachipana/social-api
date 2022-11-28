@@ -1,5 +1,6 @@
 import { Router } from "express";
 import authorizeUser from "../middlewares/authorizeUser.js";
+import validateOwnerUser from "../middlewares/validateOwnerUser.js";
 import Like from "../models/Like.js";
 import Post from "../models/Post.js";
 import User from "../models/User.js";
@@ -35,6 +36,19 @@ likesRouter.post("/", authorizeUser, async (req, res, next) => {
 
     // response to client
     res.status(201).json(savedLike);
+  }catch(err) {
+    next(err);
+  }
+});
+
+// DELETE like
+likesRouter.delete("/:id", [ authorizeUser, validateOwnerUser ], async (req, res, next) => {
+  try {
+    // delete like of database
+    await Like.deleteOne({_id: req.params.id});
+
+    // response to client
+    res.json({ message: "Like was deleted" });
   }catch(err) {
     next(err);
   }
