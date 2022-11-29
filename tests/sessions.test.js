@@ -44,7 +44,7 @@ describe("register and login with a user", () => {
     expect(usersAfterCreate).toHaveLength(2);
   });
 
-  test("validate user has a unique username", async () => {
+  test("create a user with an already existing username", async () => {
     // send data to api
     await api
       .post("/api/session/signup")
@@ -61,7 +61,7 @@ describe("register and login with a user", () => {
     expect(usersAfterCreate).toHaveLength(1);
   });
 
-  test("get a correct status code at login", async () => {
+  test("login with correct data", async () => {
     // data for login
     const data = {
       username: "test",
