@@ -8,6 +8,7 @@ import sessionsRouter from "./controllers/sessions.js";
 import postsRouter from "./controllers/posts.js";
 import commentsRouter from "./controllers/comments.js";
 import likesRouter from "./controllers/likes.js";
+import cors from "cors";
 
 const app = express();
 
@@ -19,6 +20,9 @@ configCloudinary();
 
 // connect to database
 connectDB();
+
+// config cors
+app.use(cors());
 
 // to parse request body
 app.use(express.json());
