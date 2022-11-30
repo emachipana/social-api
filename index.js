@@ -9,6 +9,7 @@ import postsRouter from "./controllers/posts.js";
 import commentsRouter from "./controllers/comments.js";
 import likesRouter from "./controllers/likes.js";
 import cors from "cors";
+import notFound from "./middlewares/notFound.js";
 
 const app = express();
 
@@ -45,6 +46,9 @@ app.use("/api/likes", likesRouter);
 // middlewares
 // handle errors
 app.use(handleErrors);
+
+// handle endpoints not found
+app.use(notFound);
 
 const PORT =  process.env.PORT || 3001;
 
